@@ -1,0 +1,27 @@
+{
+  "_README": "Schema example for vignettes.json. Populate text_en / text_zh / label / label_zh from a validated source instrument (e.g., Wang et al. 2020). vignettes.json is git-ignored — do not commit copyrighted vignette text.",
+  "PLE": {
+    "label": "<English label>",
+    "label_zh": "<Traditional Chinese label>",
+    "text_en": "<English vignette describing subclinical psychotic-like experiences>",
+    "text_zh": "<Traditional Chinese vignette describing subclinical psychotic-like experiences>"
+  },
+  "DEP": {
+    "label": "<English label>",
+    "label_zh": "<Traditional Chinese label>",
+    "text_en": "<English vignette describing major depression>",
+    "text_zh": "<Traditional Chinese vignette describing major depression>"
+  },
+  "APS": {
+    "label": "<English label>",
+    "label_zh": "<Traditional Chinese label>",
+    "text_en": "<English vignette describing attenuated psychosis syndrome>",
+    "text_zh": "<Traditional Chinese vignette describing attenuated psychosis syndrome>"
+  },
+  "SCZ": {
+    "label": "<English label>",
+    "label_zh": "<Traditional Chinese label>",
+    "text_en": "<English vignette describing schizophrenia>",
+    "text_zh": "<Traditional Chinese vignette describing schizophrenia>"
+  }
+}

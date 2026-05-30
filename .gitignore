@@ -1,0 +1,72 @@
+# API keys & secrets
+.env
+*.key
+
+# Author-only directories (NOT for public release)
+scripts_authors/
+submit/
+submit_*/
+
+# Sub-study (entire folder kept local)
+substudy_barbecue/
+
+# Third-party copyrighted instruments and PDFs
+papers/
+
+# Internal AI working notes — not for public release
+CLAUDE.md
+
+# All analysis output directories (kept local; not for public release)
+analysis_*/
+LLM_Chat_analysis_*/
+analysis_*.zip
+LLM_Chat_analysis_*.zip
+
+# Archives (never upload bundled artefacts)
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Externalized copyrighted instrument content (Wang 2020 verbatim)
+vignettes.json
+items.json
+# Keep example structure files (no content) tracked: vignettes.example.json, items.example.json
+
+# Raw results & per-stage data directories
+results/
+results_*/
+smoke_*/
+aborted data/
+
+# Raw merged item-level CSVs (contain item_text + raw_response)
+results_*models_*.csv
+
+# Logs
+logs/
+
+# R output
+Rplots.pdf
+.Rhistory
+.RData
+.Rproj.user/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Node modules (substudy protocol generator)
+node_modules/
+
+# Claude Code local state
+.claude/
+
+# macOS
+.DS_Store
+
+# Word documents
+*.docx
+
+# Word temp files
+~$*.docx

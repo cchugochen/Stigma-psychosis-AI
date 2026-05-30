@@ -1,0 +1,16 @@
+{
+  "_README": "Schema example for items.json. Populate `en`, `zh`, `reverse`, and (for prejudice) `domain` fields from your validated source instrument. items.json is git-ignored — do not commit copyrighted scale items.",
+  "social_distance_items": [
+    {"id": "SD01", "en": "<English wording of social distance item 1>", "zh": "<Traditional Chinese wording>", "reverse": false},
+    {"id": "SD02", "en": "<...>", "zh": "<...>", "reverse": false},
+    {"_note": "Continue through SD19. Set 'reverse': true for any reverse-keyed items (e.g., SD13 in Wang 2020)."}
+  ],
+  "prejudice_items": [
+    {"id": "PJ01", "en": "<English wording of prejudice item 1>", "zh": "<Traditional Chinese wording>", "reverse": true,  "domain": "disclosure"},
+    {"id": "PJ02", "en": "<...>", "zh": "<...>", "reverse": true,  "domain": "disclosure"},
+    {"_note": "Continue through PJ21. Allowed domain values: disclosure, treatment_carryover, traditional_prejudice, negative_affect, exclusionary, dangerousness."}
+  ],
+  "high_sensitivity_items": [
+    "PJ08", "PJ15", "PJ16", "PJ18", "PJ19", "PJ20", "PJ21"
+  ]
+}

@@ -1,0 +1,16 @@
+# Python dependencies for the LLM Mental-Illness Stigma Study pipeline.
+# Tested with Python 3.10+. Pin upper bounds to known-good major versions;
+# remove any provider line whose API you do not query.
+#
+# Install with:  pip install -r requirements.txt
+
+# --- HTTP transport ---------------------------------------------------------
+httpx[http2]>=0.27,<1.0
+
+# --- Provider SDKs (install only those you use) -----------------------------
+openai>=1.50,<2.0          # OpenAI GPT-3.5 / GPT-4o / GPT-5.4 + Novita.AI compat
+anthropic>=0.40,<1.0       # Claude Sonnet / Opus
+google-genai>=0.5,<1.0     # Gemini 2.5 / 3.1 (incl. Batch API)
+
+# --- Document generation (only needed for scripts_authors/, optional) -------
+python-docx>=1.1,<2.0
