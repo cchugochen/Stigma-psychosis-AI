@@ -4,10 +4,14 @@
 
 # Author-only directories (NOT for public release)
 scripts_authors/
+scripts_authors_14model/
 submit/
 submit_*/
 draft/
 draft_*/
+
+# 14-model presentation material (2026-11 talk; paper stays 13-model)
+poster_14_*/
 
 # Sub-study (entire folder kept local)
 substudy_barbecue/
