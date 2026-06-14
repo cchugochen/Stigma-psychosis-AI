@@ -6,6 +6,8 @@
 scripts_authors/
 submit/
 submit_*/
+draft/
+draft_*/
 
 # Sub-study (entire folder kept local)
 substudy_barbecue/

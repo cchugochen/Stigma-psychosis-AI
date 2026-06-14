@@ -300,11 +300,11 @@ attenuated psychosis syndrome, and psychotic-like experiences.
 *Psychiatric Services*, *67*(7), 766–770.
 https://doi.org/10.1176/appi.ps.201500156
 
-Wang, Y.-C., Yang, S.-Y., Hwu, H.-G., Chen, W. J., Hsiao, P.-C., &
-Liu, C.-C. (2020). Stigmas toward psychosis-related clinical features
-among the general public in Taiwan. *Early Intervention in
-Psychiatry*, *14*(3), 333–344.
-https://doi.org/10.1111/eip.12858
+Wang, Y.-C., Lin, Y.-T., Liu, C.-M., Hwang, T.-J., Hsieh, M. H., Chien,
+Y.-L., Hwu, H.-G., & Liu, C.-C. (2020). Stigmas toward psychosis-related
+clinical features among the general public in Taiwan. *Asia-Pacific
+Psychiatry*, *12*(1), e12370.
+https://doi.org/10.1111/appy.12370
 
 Yang, L. H., Wonpat-Borja, A. J., Opler, M. G., & Corcoran, C. M.
 (2010). Potential stigma associated with inclusion of the psychosis
@@ -342,16 +342,17 @@ co-author list once the manuscript is accepted):
 }
 
 @article{wang2020stigmas,
-  author  = {Wang, Yi-Chen and Yang, Su-Ying and Hwu, Hai-Gwo
-             and Chen, Wei J. and Hsiao, Po-Chang and Liu, Chih-Chiang},
+  author  = {Wang, Yen-Chin and Lin, Yi-Ting and Liu, Chih-Min
+             and Hwang, Tzung-Jeng and Hsieh, Ming H. and Chien, Yi-Ling
+             and Hwu, Hai-Gwo and Liu, Chen-Chung},
   title   = {Stigmas toward psychosis-related clinical features
              among the general public in {Taiwan}},
-  journal = {Early Intervention in Psychiatry},
-  volume  = {14},
-  number  = {3},
-  pages   = {333--344},
+  journal = {Asia-Pacific Psychiatry},
+  volume  = {12},
+  number  = {1},
+  pages   = {e12370},
   year    = {2020},
-  doi     = {10.1111/eip.12858},
+  doi     = {10.1111/appy.12370},
 }
 ```
 
