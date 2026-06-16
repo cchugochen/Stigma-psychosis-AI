@@ -8,7 +8,7 @@ across large language models* (13 models × 2 languages).
 The publicly released data file is the **between-model pairwise comparison
 table** that underlies the study's between-model statistics:
 
-- **`data/eTable6_pairwise_full.csv`** — every pairwise model contrast, within
+- **`data_public/eTable6_pairwise_full.csv`** — every pairwise model contrast, within
   each language × vignette × scale, with effect sizes and adjusted p-values.
 
 **Not released (third-party copyright):** the item-level response records contain
@@ -40,7 +40,7 @@ Expected human gradient (Wang 2020): `PLE < APS ≈ DEP < SCZ`.
 
 ---
 
-## 2. File: `data/eTable6_pairwise_full.csv`
+## 2. File: `data_public/eTable6_pairwise_full.csv`
 
 One row per ordered model pair, within each language × vignette × scale.
 **1,248 rows, 17 columns.** Comparison statistic = Wilcoxon rank-sum
