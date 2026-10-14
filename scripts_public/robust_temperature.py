@@ -14,7 +14,7 @@ T = 1.0 (collected via the run_stigma_study.py CLI with
 
     (a) Claude Sonnet 4.5 at T = 0.3 (from the primary 30-run dataset)
         — within-model temperature effect.
-    (b) GPT-5.4 / GPT-5.4 Mini, both at T = 1.0 in the primary dataset
+    (b) GPT-5.4 / GPT-5.4-Mini, both at T = 1.0 in the primary dataset
         — apples-to-apples cross-model comparison at matched temperature.
 
 Inputs:
@@ -43,7 +43,7 @@ from collections import defaultdict
 from pathlib import Path
 
 # Models to compare at T = 1.0
-T1_TARGET_MODELS = ("Claude Sonnet 4.5", "GPT-5.4", "GPT-5.4 Mini")
+T1_TARGET_MODELS = ("Claude Sonnet 4.5", "GPT-5.4", "GPT-5.4-Mini")
 
 # Items per scale (used for prorated scale-score computation)
 SCALE_N_ITEMS = {"social_distance": 19, "prejudice": 21}
@@ -51,7 +51,7 @@ SCALE_N_ITEMS = {"social_distance": 19, "prejudice": 21}
 # Models whose API silently overrides the requested temperature to 1.0.
 # The CSV records the user-requested value (e.g., 0.3) but the effective
 # sampling temperature is 1.0; we patch this at load time.
-EFFECTIVE_T1P0_MODELS = {"GPT-5.4", "GPT-5.4 Mini"}
+EFFECTIVE_T1P0_MODELS = {"GPT-5.4", "GPT-5.4-Mini"}
 
 
 def effective_temperature(row: dict) -> str:
@@ -200,7 +200,7 @@ def within_model_temperature(scores: list[dict]) -> list[dict]:
 
 
 def cross_model_t1p0(scores: list[dict]) -> list[dict]:
-    """Claude vs GPT-5.4 vs GPT-5.4 Mini at matched T=1.0; pairwise Cliff's δ."""
+    """Claude vs GPT-5.4 vs GPT-5.4-Mini at matched T=1.0; pairwise Cliff's δ."""
     pool: dict[tuple, list[float]] = defaultdict(list)
     for s in scores:
         if not s["in_primary"]:
@@ -214,8 +214,8 @@ def cross_model_t1p0(scores: list[dict]) -> list[dict]:
 
     pairs = [
         ("Claude Sonnet 4.5", "GPT-5.4"),
-        ("Claude Sonnet 4.5", "GPT-5.4 Mini"),
-        ("GPT-5.4", "GPT-5.4 Mini"),
+        ("Claude Sonnet 4.5", "GPT-5.4-Mini"),
+        ("GPT-5.4", "GPT-5.4-Mini"),
     ]
     out: list[dict] = []
     seen_cells = {(lang, vig, scale)
@@ -276,10 +276,12 @@ def main() -> int:
     # 2. Load primary dataset rows for Claude (T=0.3) + GPT-5.4 / Mini (T=1.0).
     rows_primary: list[dict] = []
     for lang in ("en", "zh"):
-        path = pri_dir / lang / f"results_13models_{lang}.csv"
-        if not path.is_file():
-            print(f"  WARNING: missing {path}; skipping {lang}.")
+        # Filename-agnostic: results_*.csv (works for 13-model, 14-model, etc.)
+        candidates = sorted((pri_dir / lang).glob("results_*.csv"))
+        if not candidates:
+            print(f"  WARNING: no results_*.csv in {pri_dir / lang}; skipping {lang}.")
             continue
+        path = candidates[0]
         for r in load_rows(path):
             if r["model"] in T1_TARGET_MODELS:
                 rows_primary.append(r)

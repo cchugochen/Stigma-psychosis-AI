@@ -2,16 +2,25 @@
 # Micro-structural item-level stigma profiling (bilingual).
 #
 # Reads EN and ZH raw results from an analysis directory and produces:
-#   Table5_item_stigma_profile.csv       — Model × Item, EN + ZH + diff columns (Table 5)
-#   FigA_SD_Item_Profile_Heatmap.pdf     — Social Distance heatmap, EN | ZH
-#   FigA_PJ_Item_Profile_Heatmap.pdf     — Prejudice heatmap, EN | ZH
-#   FigB_SD_APS_Spike_Slope.pdf          — SD items DEP->APS slope (EN/ZH)
-#   FigB_PJ_APS_Spike_Slope.pdf          — PJ items DEP->APS slope (EN/ZH)
+#   Table5_item_stigma_profile.csv               — Model × Item, EN + ZH + diff columns (Table 5)
+#   eFigure3A_item_profile_social_distance.pdf   — eFigure 3A: Social Distance heatmap, EN | ZH
+#   eFigure3B_item_profile_prejudice.pdf         — eFigure 3B: Prejudice heatmap, EN | ZH
+#   FigB_SD_APS_Spike_Slope.pdf                  — auxiliary: SD items DEP->APS slope (EN/ZH)
+#   FigB_PJ_APS_Spike_Slope.pdf                  — auxiliary: PJ items DEP->APS slope (EN/ZH)
+#
+# eFigure 3A/3B are the NEJM AI supplement item-level profile figures; the file
+# names match the deliverables in outputs/figures_tables/.
+# (.png companions are emitted for embedding via build_etables_0622.py.)
+# The FigB_* slope figures are auxiliary diagnostics, not part of the submission.
 #
 # Usage:
-#   Rscript scripts/item_level_profile.R analysis_13models_20260419/
+#   Rscript scripts_public/item_level_profile.R analysis_14models_20260614/
 #
 # Output is written to the analysis directory root (alongside Fig5-7).
+#
+# Model names (2026-10-12): the model tables in this script use the collection names of the authors' merged files
+# (e.g. "Gemini 2.5 Flash"), as in the analysis behind the article. analyze_stage1.R run on data_public/ writes the
+# article names ("Gemini-2.5-Flash"; scripts_public/Models_name.md); rename them back before running this script.
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -47,11 +56,12 @@ if (is.null(en_csv) && is.null(zh_csv)) {
 
 # ---- Visual encoding (mirrors analyze_results.R) ----------------------------
 
+# Data uses spaced model ids; keys here must match the data.
 model_plot_order <- c(
   "GPT-3.5", "GPT-4o", "GPT-OSS-120B", "GPT-5.4", "GPT-5.4 Mini",
   "Claude Sonnet 4.5", "Claude Opus 4.6",
   "Gemini 2.5 Flash", "Gemini 3.1 Pro Preview", "Gemini 3.1 Flash-Lite Preview",
-  "Gemma 4 31B IT", "Llama 3.3 70B", "DeepSeek V3.2"
+  "Gemini 3.5 Flash", "Gemma 4 31B IT", "Llama 3.3 70B", "DeepSeek V3.2"
 )
 
 model_family <- c(
@@ -59,8 +69,20 @@ model_family <- c(
   "GPT-5.4" = "GPT", "GPT-5.4 Mini" = "GPT",
   "Claude Sonnet 4.5" = "Claude", "Claude Opus 4.6" = "Claude",
   "Gemini 2.5 Flash" = "Gemini", "Gemini 3.1 Pro Preview" = "Gemini Pro",
-  "Gemini 3.1 Flash-Lite Preview" = "Gemini", "Gemma 4 31B IT" = "Gemini",
+  "Gemini 3.1 Flash-Lite Preview" = "Gemini", "Gemini 3.5 Flash" = "Gemini",
+  "Gemma 4 31B IT" = "Gemini",
   "Llama 3.3 70B" = "Llama", "DeepSeek V3.2" = "DeepSeek"
+)
+
+# Display labels (antigravity hyphenated naming) for row labels.
+model_disp <- c(
+  "GPT-3.5" = "GPT-3.5", "GPT-4o" = "GPT-4o", "GPT-OSS-120B" = "GPT-OSS-120B",
+  "GPT-5.4" = "GPT-5.4", "GPT-5.4 Mini" = "GPT-5.4-Mini",
+  "Claude Sonnet 4.5" = "Claude Sonnet 4.5", "Claude Opus 4.6" = "Claude Opus 4.6",
+  "Gemini 2.5 Flash" = "Gemini-2.5-Flash", "Gemini 3.1 Pro Preview" = "Gemini-3.1-Pro-Preview",
+  "Gemini 3.1 Flash-Lite Preview" = "Gemini-3.1-Flash-Lite-Preview",
+  "Gemini 3.5 Flash" = "Gemini-3.5-Flash", "Gemma 4 31B IT" = "Gemma-4-31B-IT",
+  "Llama 3.3 70B" = "Llama-3.3-70B", "DeepSeek V3.2" = "DeepSeek-V3.2"
 )
 
 family_levels <- c("GPT", "Claude", "Gemini", "Gemini Pro", "Llama", "DeepSeek")
@@ -160,7 +182,7 @@ build_heatmap <- function(scale_filter, scale_title, figure_label) {
     mutate(
       family = factor(model_family[as.character(model)],
                       levels = family_levels),
-      row_label = paste0(as.character(model), " | ", item_id),
+      row_label = paste0(model_disp[as.character(model)], " | ", item_id),
       language  = factor(language, levels = c("EN", "ZH"))
     )
 
@@ -207,17 +229,21 @@ build_heatmap <- function(scale_filter, scale_title, figure_label) {
     )
 }
 
-# FigA_SD: Social Distance (19 items × 13 models × 2 langs)
-p_sd <- build_heatmap("social_distance", "Social Distance", "Figure A-SD")
-figA_sd <- file.path(parent_dir, "FigA_SD_Item_Profile_Heatmap.pdf")
-ggsave(figA_sd, p_sd, width = 12, height = 16)
-message("Wrote: ", figA_sd)
+# eFigure 3A: Social Distance heatmap (19 items × 14 models × 2 langs)
+p_sd <- build_heatmap("social_distance", "Social Distance", "eFigure 3A")
+efig3a <- file.path(parent_dir, "eFigure3A_item_profile_social_distance.pdf")
+ggsave(efig3a, p_sd, width = 12, height = 16)
+ggsave(file.path(parent_dir, "eFigure3A_item_profile_social_distance.png"),
+       p_sd, width = 12, height = 16, dpi = 200)
+message("Wrote: ", efig3a)
 
-# FigA_PJ: Prejudice (21 items × 13 models × 2 langs)
-p_pj <- build_heatmap("prejudice", "Prejudice", "Figure A-PJ")
-figA_pj <- file.path(parent_dir, "FigA_PJ_Item_Profile_Heatmap.pdf")
-ggsave(figA_pj, p_pj, width = 12, height = 18)
-message("Wrote: ", figA_pj)
+# eFigure 3B: Prejudice heatmap (21 items × 14 models × 2 langs)
+p_pj <- build_heatmap("prejudice", "Prejudice", "eFigure 3B")
+efig3b <- file.path(parent_dir, "eFigure3B_item_profile_prejudice.pdf")
+ggsave(efig3b, p_pj, width = 12, height = 18)
+ggsave(file.path(parent_dir, "eFigure3B_item_profile_prejudice.png"),
+       p_pj, width = 12, height = 18, dpi = 200)
+message("Wrote: ", efig3b)
 
 # ---- APS spike slope helper --------------------------------------------------
 

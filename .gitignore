@@ -5,19 +5,27 @@
 # Author-only directories (NOT for public release)
 scripts_authors/
 scripts_authors_14model/
+scripts_authors_sense/
 submit/
 submit_*/
 draft/
 draft_*/
 
-# 14-model presentation material (2026-11 talk; paper stays 13-model)
-poster_14_*/
+# 14-model presentation material (2026-11 talk)
+poster_14model_*/
 
-# Sub-study (entire folder kept local)
-substudy_barbecue/
+# Response-classifier human-validation study (Wang 2020 verbatim text + raw responses + model-identity key)
+resp_valid_*/
+
+# Teaching manual (may quote instrument text / unpublished interpretation; keep out of the public repo)
+learning.md
 
 # Third-party copyrighted instruments and PDFs
 papers/
+# Important papers not yet cited (third-party PDFs), internal reading notes, local virtualenv
+papers_Oct/
+Reader/
+.venv/
 
 # Internal AI working notes — not for public release
 CLAUDE.md
@@ -34,7 +42,10 @@ LLM_Chat_analysis_*.zip
 *.tar.gz
 *.tgz
 
-# Externalized copyrighted instrument content (Wang 2020 verbatim)
+# Copyrighted instrument content (Lee et al., 2016; Wang et al., 2020): the full
+# vignette and item wording is NOT redistributed. PROMPTS.md (public) reproduces
+# the prompts and one worked example only: the PLE vignette with Social Distance
+# item SD01, in English and Mandarin Chinese (decision of 2026-10-07).
 vignettes.json
 items.json
 # Keep example structure files (no content) tracked: vignettes.example.json, items.example.json
@@ -76,3 +87,10 @@ node_modules/
 
 # Word temp files
 ~$*.docx
+
+# Figure and table outputs of the scripts in scripts_public/ (regenerated locally)
+outputs/
+
+# Untracked scratch scripts at the repository root (not part of the pipeline)
+fix_make_figures.py
+rewrite_fig2.py

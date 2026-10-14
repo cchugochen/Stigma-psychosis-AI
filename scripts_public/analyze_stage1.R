@@ -11,6 +11,15 @@
 #   en/results_NNmodels_en.csv
 #   zh/results_NNmodels_zh.csv
 #
+# MODEL NAMES (2026-10-12): model_order, model_labels and the other model tables below use the article's names
+# (hyphenated except the two Claude models; scripts_public/Models_name.md), as in data_public/. The `model` column of
+# the input must carry these names: any other name becomes NA and all such models are pooled into one group without
+# an error. data_public/item_level_responses_14models_{en,zh}.csv already do; copy them to
+# <analysis_dir>/{en,zh}/results_14models_{en,zh}.csv. The authors' merged files (merge_14models_20260614.py,
+# analysed for the article on 2026-06-14) keep the collection names (e.g. "Gemini 2.5 Flash"): rename them first with
+# the DISPLAY table in export_public_data_1007.py. Run on data_public/ (2026-10-12), this script reproduced all 34
+# output tables of the article's analysis.
+#
 # Outputs per language subfolder (en/ and zh/):
 #   run_level_scale_scores.csv
 #   tableS1_missingness.csv           tableS2_descriptive_stats.csv
@@ -47,7 +56,7 @@ suppressPackageStartupMessages({
 })
 
 # =============================================================================
-# SHARED CONSTANTS — 13-model v0419 protocol (Qwen3.5 35B removed)
+# SHARED CONSTANTS — 14-model set: v0419 protocol (13 models) + Gemini-3.5-Flash (2026-06)
 # =============================================================================
 
 min_scale_completeness      <- 0.80
@@ -61,31 +70,33 @@ model_order <- c(
   "GPT-4o",
   "GPT-OSS-120B",
   "GPT-5.4",
-  "GPT-5.4 Mini",
+  "GPT-5.4-Mini",
   "Claude Sonnet 4.5",
   "Claude Opus 4.6",
-  "Gemini 2.5 Flash",
-  "Gemini 3.1 Pro Preview",
-  "Gemini 3.1 Flash-Lite Preview",
-  "Gemma 4 31B IT",
-  "Llama 3.3 70B",
-  "DeepSeek V3.2"
+  "Gemini-2.5-Flash",
+  "Gemini-3.1-Pro-Preview",
+  "Gemini-3.1-Flash-Lite-Preview",
+  "Gemini-3.5-Flash",
+  "Gemma-4-31B-IT",
+  "Llama-3.3-70B",
+  "DeepSeek-V3.2"
 )
 
 model_labels <- c(
   "GPT-3.5"               = "GPT-3.5 (2022/11)",
   "GPT-4o"                = "GPT-4o (2024/05)",
-  "Llama 3.3 70B"         = "Llama 3.3 70B (2024/12)",
-  "Gemini 2.5 Flash"      = "Gemini 2.5 Flash (2025/03)",
+  "Llama-3.3-70B"         = "Llama-3.3-70B (2024/12)",
+  "Gemini-2.5-Flash"      = "Gemini-2.5-Flash (2025/03)",
   "GPT-OSS-120B"          = "GPT-OSS-120B (2025/08)",
   "Claude Sonnet 4.5"     = "Claude Sonnet 4.5 (2025/09)",
-  "DeepSeek V3.2"         = "DeepSeek V3.2 (2025/12)",
+  "DeepSeek-V3.2"         = "DeepSeek-V3.2 (2025/12)",
   "Claude Opus 4.6"       = "Claude Opus 4.6 (2026/02)",
-  "Gemini 3.1 Pro Preview"        = "Gemini 3.1 Pro Preview (2026/03)",
-  "Gemini 3.1 Flash-Lite Preview" = "Gemini 3.1 Flash-Lite Preview (2026/03)",
+  "Gemini-3.1-Pro-Preview"        = "Gemini-3.1-Pro-Preview (2026/03)",
+  "Gemini-3.1-Flash-Lite-Preview" = "Gemini-3.1-Flash-Lite-Preview (2026/03)",
   "GPT-5.4"               = "GPT-5.4 (2026/03)",
-  "GPT-5.4 Mini"          = "GPT-5.4 Mini (2026/03)",
-  "Gemma 4 31B IT"        = "Gemma 4 31B IT (2026/04)"
+  "GPT-5.4-Mini"          = "GPT-5.4-Mini (2026/03)",
+  "Gemma-4-31B-IT"        = "Gemma-4-31B-IT (2026/04)",
+  "Gemini-3.5-Flash"      = "Gemini-3.5-Flash (2026/06)"
 )
 
 model_family <- c(
@@ -93,15 +104,16 @@ model_family <- c(
   "GPT-4o"                = "GPT",
   "GPT-OSS-120B"          = "GPT",
   "GPT-5.4"               = "GPT",
-  "GPT-5.4 Mini"          = "GPT",
+  "GPT-5.4-Mini"          = "GPT",
   "Claude Sonnet 4.5"     = "Claude",
   "Claude Opus 4.6"       = "Claude",
-  "Gemini 2.5 Flash"      = "Gemini",
-  "Gemini 3.1 Pro Preview"        = "Gemini Pro",
-  "Gemini 3.1 Flash-Lite Preview" = "Gemini",
-  "Gemma 4 31B IT"        = "Gemini",
-  "Llama 3.3 70B"         = "Llama",
-  "DeepSeek V3.2"         = "DeepSeek"
+  "Gemini-2.5-Flash"      = "Gemini",
+  "Gemini-3.1-Pro-Preview"        = "Gemini Pro",
+  "Gemini-3.1-Flash-Lite-Preview" = "Gemini",
+  "Gemini-3.5-Flash"      = "Gemini",
+  "Gemma-4-31B-IT"        = "Gemini",
+  "Llama-3.3-70B"         = "Llama",
+  "DeepSeek-V3.2"         = "DeepSeek"
 )
 
 model_deployment <- c(
@@ -109,15 +121,16 @@ model_deployment <- c(
   "GPT-4o"                = "API",
   "GPT-OSS-120B"          = "Open-source",
   "GPT-5.4"               = "API",
-  "GPT-5.4 Mini"          = "API",
+  "GPT-5.4-Mini"          = "API",
   "Claude Sonnet 4.5"     = "API",
   "Claude Opus 4.6"       = "API",
-  "Gemini 2.5 Flash"      = "API",
-  "Gemini 3.1 Pro Preview"        = "API",
-  "Gemini 3.1 Flash-Lite Preview" = "API",
-  "Gemma 4 31B IT"        = "Open-source",
-  "Llama 3.3 70B"         = "Open-source",
-  "DeepSeek V3.2"         = "Open-source"
+  "Gemini-2.5-Flash"      = "API",
+  "Gemini-3.1-Pro-Preview"        = "API",
+  "Gemini-3.1-Flash-Lite-Preview" = "API",
+  "Gemini-3.5-Flash"      = "API",
+  "Gemma-4-31B-IT"        = "Open-source",
+  "Llama-3.3-70B"         = "Open-source",
+  "DeepSeek-V3.2"         = "Open-source"
 )
 
 family_colors <- c(
@@ -125,15 +138,16 @@ family_colors <- c(
   "GPT-4o"                = "#2E7D32",
   "GPT-OSS-120B"          = "#A5D6A7",
   "GPT-5.4"               = "#388E3C",
-  "GPT-5.4 Mini"          = "#66BB6A",
+  "GPT-5.4-Mini"          = "#66BB6A",
   "Claude Sonnet 4.5"     = "#FF9800",
   "Claude Opus 4.6"       = "#E65100",
-  "Gemini 2.5 Flash"      = "#0D47A1",
-  "Gemini 3.1 Pro Preview"        = "#1565C0",
-  "Gemini 3.1 Flash-Lite Preview" = "#42A5F5",
-  "Gemma 4 31B IT"        = "#90CAF9",
-  "Llama 3.3 70B"         = "#6A1B9A",
-  "DeepSeek V3.2"         = "#C62828"
+  "Gemini-2.5-Flash"      = "#0D47A1",
+  "Gemini-3.1-Pro-Preview"        = "#1565C0",
+  "Gemini-3.1-Flash-Lite-Preview" = "#42A5F5",
+  "Gemini-3.5-Flash"      = "#1E88E5",
+  "Gemma-4-31B-IT"        = "#90CAF9",
+  "Llama-3.3-70B"         = "#6A1B9A",
+  "DeepSeek-V3.2"         = "#C62828"
 )
 
 family_group_colors <- c(
@@ -150,17 +164,18 @@ deployment_shapes <- c("API" = 16, "Open-source" = 5)
 model_release_dates <- c(
   "GPT-3.5"               = "2022-11-30",
   "GPT-4o"                = "2024-05-13",
-  "Llama 3.3 70B"         = "2024-12-06",
-  "Gemini 2.5 Flash"      = "2025-03-25",
+  "Llama-3.3-70B"         = "2024-12-06",
+  "Gemini-2.5-Flash"      = "2025-03-25",
   "GPT-OSS-120B"          = "2025-08-01",
   "Claude Sonnet 4.5"     = "2025-09-29",
-  "DeepSeek V3.2"         = "2025-12-01",
+  "DeepSeek-V3.2"         = "2025-12-01",
   "Claude Opus 4.6"       = "2026-02-01",
-  "Gemini 3.1 Pro Preview"        = "2026-03-01",
-  "Gemini 3.1 Flash-Lite Preview" = "2026-03-01",
+  "Gemini-3.1-Pro-Preview"        = "2026-03-01",
+  "Gemini-3.1-Flash-Lite-Preview" = "2026-03-01",
   "GPT-5.4"               = "2026-03-01",
-  "GPT-5.4 Mini"          = "2026-03-01",
-  "Gemma 4 31B IT"        = "2026-04-01"
+  "GPT-5.4-Mini"          = "2026-03-01",
+  "Gemma-4-31B-IT"        = "2026-04-01",
+  "Gemini-3.5-Flash"      = "2026-06-01"
 )
 
 # Plot order: GPT-3.5 baseline first, then GPT > Claude > Gemini > Other
@@ -170,15 +185,16 @@ model_plot_order <- c(
   "GPT-4o",
   "GPT-OSS-120B",
   "GPT-5.4",
-  "GPT-5.4 Mini",
+  "GPT-5.4-Mini",
   "Claude Sonnet 4.5",
   "Claude Opus 4.6",
-  "Gemini 2.5 Flash",
-  "Gemini 3.1 Pro Preview",
-  "Gemini 3.1 Flash-Lite Preview",
-  "Gemma 4 31B IT",
-  "Llama 3.3 70B",
-  "DeepSeek V3.2"
+  "Gemini-2.5-Flash",
+  "Gemini-3.1-Pro-Preview",
+  "Gemini-3.1-Flash-Lite-Preview",
+  "Gemini-3.5-Flash",
+  "Gemma-4-31B-IT",
+  "Llama-3.3-70B",
+  "DeepSeek-V3.2"
 )
 
 model_short_labels <- c(
@@ -186,15 +202,16 @@ model_short_labels <- c(
   "GPT-4o"                = "GPT-4o",
   "GPT-OSS-120B"          = "GPT-OSS",
   "GPT-5.4"               = "GPT-5.4",
-  "GPT-5.4 Mini"          = "GPT-5.4m",
+  "GPT-5.4-Mini"          = "GPT-5.4m",
   "Claude Sonnet 4.5"     = "Sonnet\n4.5",
   "Claude Opus 4.6"       = "Opus\n4.6",
-  "Gemini 2.5 Flash"      = "G2.5\nFlash",
-  "Gemini 3.1 Pro Preview"        = "G3.1 Pro",
-  "Gemini 3.1 Flash-Lite Preview" = "G3.1\nF-Lite",
-  "Gemma 4 31B IT"        = "Gemma 4",
-  "Llama 3.3 70B"         = "Llama\n3.3",
-  "DeepSeek V3.2"         = "DeepSeek"
+  "Gemini-2.5-Flash"      = "G2.5\nFlash",
+  "Gemini-3.1-Pro-Preview"        = "G3.1 Pro",
+  "Gemini-3.1-Flash-Lite-Preview" = "G3.1\nF-Lite",
+  "Gemini-3.5-Flash"      = "G3.5\nFlash",
+  "Gemma-4-31B-IT"        = "Gemma 4",
+  "Llama-3.3-70B"         = "Llama\n3.3",
+  "DeepSeek-V3.2"         = "DeepSeek"
 )
 
 human_baselines <- tribble(
@@ -300,10 +317,12 @@ run_reliability_metrics <- function(items_matrix, min_complete_runs = 10) {
   base
 }
 
-# Returns a tibble with Cliff's delta + 95% CI (uses effsize package)
+# Returns a tibble with Cliff's delta + 95% CI (uses effsize package).
+# return.dm = TRUE (2026-10-12): the default row-partitioning algorithm of effsize 0.8.1 can give a wrong,
+# order-dependent CI when many values are tied; the dominance-matrix algorithm is exact (estimate unchanged).
 safe_cliff_delta <- function(x, y) {
   out <- tryCatch(
-    suppressWarnings(effsize::cliff.delta(x, y, conf.level = 0.95)),
+    suppressWarnings(effsize::cliff.delta(x, y, conf.level = 0.95, return.dm = TRUE)),
     error = function(e) NULL
   )
   if (is.null(out)) {
@@ -348,8 +367,8 @@ theme_journal <- function(base_size = 11) {
 make_model_label_pub <- function(m) {
   m <- as.character(m)
   display <- dplyr::recode(m,
-    "Gemini 3.1 Pro Preview"        = "Gemini 3.1 Pro Preview",
-    "Gemini 3.1 Flash-Lite Preview" = "Gemini 3.1 Flash-Lite Preview",
+    "Gemini-3.1-Pro-Preview"        = "Gemini-3.1-Pro-Preview",
+    "Gemini-3.1-Flash-Lite-Preview" = "Gemini-3.1-Flash-Lite-Preview",
     .default = m
   )
   dep <- unname(ifelse(m %in% names(model_deployment), model_deployment[[m]], ""))
@@ -903,7 +922,7 @@ run_language_analysis <- function(csv_path, results_dir, lang_tag) {
         "Each point = one model\u2019s mean across 4 vignettes. Solid circles = API; open diamonds = open-source.\n",
         "Grey crossbar = median \u00b1 IQR within each bin (2022\u201323 / 2024\u201325 / 2026). ",
         "Colored arrows connect successive models within a developer family.\n",
-        "Q1 is reported descriptively; no formal trend test is conducted (n = 13 models is small relative to confounders)."
+        "Q1 is reported descriptively; no formal trend test is conducted (n = 14 models is small relative to confounders)."
       )
     ) +
     guides(color = guide_legend(nrow = 2, order = 1), shape = guide_legend(order = 2)) +
@@ -1108,7 +1127,7 @@ run_language_analysis <- function(csv_path, results_dir, lang_tag) {
                          midpoint = score_mid, limits = c(score_min, score_max), name = "Mean\nItem Score") +
     labs(
       title    = paste0("Prejudice Domain Scores by Model and Vignette [", lang_label, "]"),
-      subtitle = "Rows: model family order (consistent with Fig 2/3); columns clustered by Ward\u2019s D2; red border = DeepSeek V3.2",
+      subtitle = "Rows: model family order (consistent with Fig 2/3); columns clustered by Ward\u2019s D2; red border = DeepSeek-V3.2",
       x = "Vignette \u00d7 prejudice domain", y = NULL,
       caption  = paste0(
         "Cell values = mean item scores (1\u20134). Clustering: Ward\u2019s minimum-variance on Euclidean distances.\n",
@@ -1353,7 +1372,7 @@ run_cross_language <- function(en_scores_path, zh_scores_path, output_dir) {
                          midpoint = 0, name = "ZH \u2212 EN") +
     labs(
       title    = "Cross-Language Differences in Mean Stigma Scores",
-      subtitle = "Positive = higher stigma in Chinese; red border highlights DeepSeek V3.2",
+      subtitle = "Positive = higher stigma in Chinese; red border highlights DeepSeek-V3.2",
       x = "Clinical vignette", y = "Model",
       caption  = paste0(
         "* P < 0.05 by Wilcoxon rank-sum test (Holm-adjusted). ",
@@ -1579,7 +1598,7 @@ en_dir <- file.path(analysis_dir, "en")
 zh_dir <- file.path(analysis_dir, "zh")
 
 cat("=================================================================\n")
-cat("Stage 1 Analysis Pipeline — v0419 (13-model)\n")
+cat("Stage 1 Analysis Pipeline — 14-model (v0419 + Gemini-3.5-Flash)\n")
 cat("Analysis dir:", analysis_dir, "\n")
 cat("EN input:", en_csv, "\n")
 cat("ZH input:", zh_csv, "\n")

@@ -173,12 +173,16 @@ def main() -> int:
     src_dir = (repo_root / args.source).resolve()
     out_dir = (repo_root / args.output).resolve()
 
-    en_src = src_dir / "en" / "results_13models_en.csv"
-    zh_src = src_dir / "zh" / "results_13models_zh.csv"
-    for path in (en_src, zh_src):
-        if not path.is_file():
-            print(f"ERROR: missing source file {path}", file=sys.stderr)
-            return 1
+    # Locate the merged results CSV in en/ and zh/ (filename-agnostic: results_*.csv,
+    # matching analyze_stage1.R). Works for results_13models_*.csv, results_14models_*.csv, etc.
+    en_candidates = sorted((src_dir / "en").glob("results_*.csv"))
+    zh_candidates = sorted((src_dir / "zh").glob("results_*.csv"))
+    if not en_candidates or not zh_candidates:
+        print(f"ERROR: no results_*.csv found under {src_dir}/en or {src_dir}/zh",
+              file=sys.stderr)
+        return 1
+    en_src = en_candidates[0]
+    zh_src = zh_candidates[0]
 
     print(f"Source: {src_dir}")
     print(f"Output: {out_dir}")

@@ -64,7 +64,7 @@ with _VIGNETTES_PATH.open("r", encoding="utf-8") as _fh:
 VIGNETTES = {k: v for k, v in VIGNETTES.items() if not k.startswith("_")}
 
 
-# Conservative defaults for Gemini 3.1 Pro Preview on Paid Tier 1.
+# Conservative defaults for Gemini-3.1-Pro-Preview on Paid Tier 1.
 # Official docs state that limits are applied per project, preview models are
 # more restricted, and actual standard API limits should be read from AI
 # Studio. These defaults therefore intentionally stay below likely project
@@ -118,13 +118,13 @@ AVAILABLE_MODELS = {
         {"name":"Claude Opus 4.6","model_id":"claude-opus-4-6","max_tokens":64},
     ],
     "openai": [
-        {"name":"GPT-5.4 Mini","model_id":"gpt-5.4-mini","max_tokens":256,"reasoning_effort":"low"},
+        {"name":"GPT-5.4-Mini","model_id":"gpt-5.4-mini","max_tokens":256,"reasoning_effort":"low"},
         {"name":"GPT-5.4","model_id":"gpt-5.4","max_tokens":256,"reasoning_effort":"low"},
     ],
     "google": [
-        {"name":"Gemini 2.5 Flash","model_id":"gemini-2.5-flash","max_tokens":256},
+        {"name":"Gemini-2.5-Flash","model_id":"gemini-2.5-flash","max_tokens":256},
         {
-            "name":"Gemini 3.1 Pro Preview",
+            "name":"Gemini-3.1-Pro-Preview",
             "model_id":"gemini-3.1-pro-preview",
             "max_tokens":256,
             "thinking_level":"low",
@@ -134,11 +134,12 @@ AVAILABLE_MODELS = {
             "retry_backoff_cap_s":GEMINI_3_1_PRO_RETRY_BACKOFF_CAP_S,
             "retry_backoff_floor_s":GEMINI_3_1_PRO_RETRY_BACKOFF_FLOOR_S,
         },
-        {"name":"Gemini 3.1 Flash-Lite Preview","model_id":"gemini-3.1-flash-lite-preview","max_tokens":256,"thinking_level":"low"},
+        {"name":"Gemini-3.1-Flash-Lite-Preview","model_id":"gemini-3.1-flash-lite-preview","max_tokens":256,"thinking_level":"low"},
+        {"name":"Gemini-3.5-Flash","model_id":"gemini-3.5-flash","max_tokens":256,"thinking_level":"low"},
     ],
     "novita": [
         {
-            "name":"DeepSeek V3.2",
+            "name":"DeepSeek-V3.2",
             "model_id":"deepseek/deepseek-v3.2",
             "base_url":"https://api.novita.ai/openai",
             "max_tokens":512,       # v0409: raised from 64 to match GPT-OSS-120B
@@ -156,7 +157,7 @@ AVAILABLE_MODELS = {
             "supports_temperature":True,
         },
         {
-            "name":"Gemma 4 31B IT",
+            "name":"Gemma-4-31B-IT",
             "model_id":"google/gemma-4-31b-it",
             "base_url":"https://api.novita.ai/openai",
             "max_tokens":512,
@@ -165,7 +166,7 @@ AVAILABLE_MODELS = {
             "supports_temperature":True,
         },
         {
-            "name":"Llama 3.3 70B",
+            "name":"Llama-3.3-70B",
             "model_id":"meta-llama/llama-3.3-70b-instruct",
             "base_url":"https://api.novita.ai/openai",
             "max_tokens":512,

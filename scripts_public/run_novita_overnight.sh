@@ -37,7 +37,7 @@ run_optional() {
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Novita overnight run starting"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Log file: $LOG_FILE"
 
-python3 -u run_stigma_study.py \
+python3 -u scripts_public/run_stigma_study.py \
   --provider novita \
   --runs 30 \
   --language en \
@@ -45,7 +45,7 @@ python3 -u run_stigma_study.py \
   --yes \
   --delay 0.1
 
-python3 -u run_stigma_study.py \
+python3 -u scripts_public/run_stigma_study.py \
   --provider novita \
   --runs 30 \
   --language zh \

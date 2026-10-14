@@ -1,47 +1,30 @@
 #!/usr/bin/env python3
 """
-Rebuild analysis_13models_20260419 merged CSVs with corrected response classifications.
+Build analysis_14models_20260614 merged CSVs (13-model v0419 set + Gemini-3.5-Flash).
 
-Applies:
+Same merge/reclassification logic as the 13-model merge script of the first public release (reclassify_merge.py, in the git history), with one
+added source per language (Gemini-3.5-Flash, collected 2026-06-14) and a new output dir.
+
+Applies the same corrected response classifications:
   - Bug 5 fix: smart-quote normalization in classify_response()
-  - Bug 6 note: Claude Sonnet 4.5 EN truncated responses now uniformly -> unparseable
-  - Fix 7: GPT-3.5 ZH SD12×PLE context refusal patterns
+  - Bug 6 note: Claude Sonnet 4.5 EN truncated responses -> unparseable
+  - Fix 7: GPT-3.5 ZH SD12xPLE context refusal patterns
   - Fix 8: digit-before-TRUNCATED parseable as valid
-  - Deduplication for GPT-OSS-120B ZH (two background processes wrote same CSV)
+  - Deduplication on (model_id, run, vignette, scale_type, item_id), newest timestamp wins
 
-13 models (v0419 protocol, Qwen3.5 35B removed due to Novita billing issues):
-  GPT-3.5, GPT-4o, GPT-OSS-120B, GPT-5.4, GPT-5.4 Mini,
+14 models:
+  GPT-3.5, GPT-4o, GPT-OSS-120B, GPT-5.4, GPT-5.4-Mini,
   Claude Sonnet 4.5, Claude Opus 4.6,
-  Gemini 2.5 Flash, Gemini 3.1 Pro Preview, Gemini 3.1 Flash-Lite Preview, Gemma 4 31B IT,
-  Llama 3.3 70B, DeepSeek V3.2
-
-Sources (in merge order):
-  EN:
-    5 models:       analysis_5models_20260401/en/results_5models_en.csv
-    GPT-OSS-120B:   results_20260410_gpt_oss_120b_novita/results_en.csv
-    DeepSeek:       results_20260410_deepseek_novita/results_en.csv
-    Gemma:          results_20260411_gemma_novita/results_en.csv
-    GPT-4o:         results_20260417_gpt4o/results_0417_en.csv
-    GPT-3.5:        results_20260417_gpt35/results_en.csv
-    Gemini 3.1 Pro Preview: results_20260417_gemini_pro/results_en.csv
-    Llama 3.3 70B:  results_20260417_llama/results_en.csv
-    Gemini 2.5 Flash: results_20260417_gemini_flash/results_en.csv
-  ZH:
-    5 models:       analysis_5models_20260401/zh/results_5models_zh.csv
-    GPT-OSS-120B:   results_20260410_gpt_oss_120b_novita/results_zh.csv  (deduplicate)
-    DeepSeek:       results_20260410_deepseek_novita/results_zh.csv
-    Gemma:          results_20260411_gemma_novita/results_zh.csv
-    GPT-4o:         results_20260417_gpt4o/results_0417_zh.csv
-    GPT-3.5:        results_20260417_gpt35/results_zh.csv
-    Gemini 3.1 Pro Preview: results_20260417_gemini_pro/results_zh.csv
-    Llama 3.3 70B:  results_20260417_llama/results_zh.csv
-    Gemini 2.5 Flash: results_20260417_gemini_flash/results_zh.csv
+  Gemini-2.5-Flash, Gemini-3.1-Pro-Preview, Gemini-3.1-Flash-Lite-Preview,
+  Gemini-3.5-Flash, Gemma-4-31B-IT, Llama-3.3-70B, DeepSeek-V3.2
 """
 import sys, csv
 from pathlib import Path
 from collections import defaultdict
 
-sys.path.insert(0, str(Path(__file__).parent))
+# scripts_public holds the 14-model run_stigma_study (classifier)
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "scripts_public"))
 from run_stigma_study import (
     classify_response, parse_response, score_item,
     SOCIAL_DISTANCE_ITEMS, PREJUDICE_ITEMS, HIGH_SENSITIVITY_ITEMS,
@@ -61,6 +44,7 @@ SOURCES = {
         "results_20260417_gemini_pro/results_en.csv",
         "results_20260417_llama/results_en.csv",
         "results_20260417_gemini_flash/results_en.csv",
+        "results_20260614_gemini_35_flash/results_en.csv",
     ],
     "zh": [
         "analysis_5models_20260401/zh/results_5models_zh.csv",
@@ -72,13 +56,14 @@ SOURCES = {
         "results_20260417_gemini_pro/results_zh.csv",
         "results_20260417_llama/results_zh.csv",
         "results_20260417_gemini_flash/results_zh.csv",
+        "results_20260614_gemini_35_flash/results_zh.csv",
     ],
 }
 
-OUT_DIR = Path("analysis_13models_20260419")
+OUT_DIR = REPO_ROOT / "analysis_14models_20260614"
 OUT_FILES = {
-    "en": OUT_DIR / "en" / "results_13models_en.csv",
-    "zh": OUT_DIR / "zh" / "results_13models_zh.csv",
+    "en": OUT_DIR / "en" / "results_14models_en.csv",
+    "zh": OUT_DIR / "zh" / "results_14models_zh.csv",
 }
 
 
@@ -122,7 +107,7 @@ def merge_language(lang):
     sources = SOURCES[lang]
     all_rows = []
     for src in sources:
-        p = Path(src)
+        p = REPO_ROOT / src
         if not p.exists():
             print(f"  WARNING: missing {src}, skipping")
             continue
@@ -136,7 +121,6 @@ def merge_language(lang):
     if len(all_rows) < before:
         print(f"  Deduplication: {before} -> {len(all_rows)} rows (removed {before - len(all_rows)} dupes)")
 
-    # Reclassify every row
     old_types = defaultdict(int)
     new_types = defaultdict(int)
     changed = 0
@@ -153,7 +137,6 @@ def merge_language(lang):
     print(f"  Old types: {dict(sorted(old_types.items()))}")
     print(f"  New types: {dict(sorted(new_types.items()))}")
 
-    # Sort
     vig_order = {"PLE": 0, "DEP": 1, "APS": 2, "SCZ": 3}
     all_rows.sort(key=lambda r: (
         r["model"],
@@ -183,7 +166,6 @@ def main():
         print(f"{'='*60}")
         rows = merge_language(lang)
 
-        # Per-model summary
         by_model = defaultdict(list)
         for r in rows:
             by_model[r["model"]].append(r)
